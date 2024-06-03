@@ -1,5 +1,5 @@
 from environs import Env
-from sqlalchemy import create_engine, Column, Integer, String, Sequence
+from sqlalchemy import create_engine, Column, Integer, String, Sequence, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
@@ -25,19 +25,34 @@ class User(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     username = Column(String(50), unique=True, nullable=False)
     step = Column(Integer, nullable=True)
-
+    message_sent = Column(Boolean, nullable=True)
+    no_stat = Column(Boolean, nullable = True)
 
 class Links(Base):
     __tablename__ = "links"
     id = Column(Integer, primary_key=True, autoincrement=True)
     link = Column(String(255), nullable=True)
 
+class time_loop(Base): #временная шкала для отчетов
+    __tablename__ = "time_loop"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    username = Column(String(50), unique=True, nullable=False)
+    step2 = Column(String(50), nullable=True)
+    step3 = Column(String(50), nullable=True)
+    step4 = Column(String(50), nullable=True)
+    step5 = Column(String(50), nullable=True)
+    step6 = Column(String(50), nullable=True)
+    step7 = Column(String(50), nullable=True)
+    step10 = Column(String(50), nullable=True)
+    no_stat = Column(Boolean, nullable = True)
+
+
 
 def all_user() -> list[dict]:
     arr = []
     Session = sessionmaker()
     session = Session(bind = engine)
-    users = session.query(User).all()
+    users = session.query(User).filter(User.no_stat == False).all()
     session.close()
     for i in users:
         arr.append({
@@ -76,7 +91,7 @@ def delete_link(id) -> None:
     session.close()
     return 
 
-
+#
 def add_link(link) -> None:
     Session = sessionmaker()
     session = Session(bind = engine)
@@ -86,17 +101,55 @@ def add_link(link) -> None:
     session.close()
     return
 
-
+#удаление пользователей из статы
 def delete_users_range(start, end) -> None:
     Session = sessionmaker()
     session = Session(bind = engine)
-    for i in range(start, end+1):
-        session.query(User).filter(User.id == i).delete()
-        session.commit()
+    try:
+        for i in range(start, end+1):
+            curr = session.query(User).filter(User.id == i).first()
+            curr.no_stat = True
+            session.commit()
+    except:
+        pass
     session.close()
     return
 
 
+def all_time_loop() -> list[dict]:
+    arr = []
+    Session = sessionmaker()
+    session = Session(bind = engine)
+    loops = session.query(time_loop).filter(time_loop.no_stat == False).all()
+    session.close()
+    for i in loops:
+        arr.append({
+            "id": i.id,
+            "user": i.username,
+            "step2": i.step2 if i.step2 != None else "Не дошел",
+            "step3": i.step3 if i.step3 != None else "Не дошел",
+            "step4": i.step4 if i.step4 != None else "Не дошел",
+            "step5": i.step5 if i.step5 != None else "Не дошел",
+            "step6": i.step6 if i.step6 != None else "Не дошел",
+            "step7": i.step7 if i.step7 != None else "Не дошел",
+            "step10": i.step10 if i.step10 != None else "Не дошел"
+        })
+    for i in range(len(arr) - 1):
+        for j in range(len(arr) - 1 - i):
+            if arr[j]["id"] > arr[j + 1]["id"]:
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+    return arr
 
+def delete_loop_range(start, end) -> None:
+    Session = sessionmaker()
+    session = Session(bind = engine)
+    try:
+        for i in range(start, end+1):
+            curr = session.query(time_loop).filter(time_loop.id == i).first()
+            curr.no_stat = True
+            session.commit()
+    except: 
+        pass
+    session.close()
 
 Base.metadata.create_all(engine)

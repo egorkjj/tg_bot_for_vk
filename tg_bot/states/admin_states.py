@@ -4,3 +4,4 @@ class admin(StatesGroup):
     del_user = State()
     add_link = State()
     del_link = State()
+    del_loop = State()

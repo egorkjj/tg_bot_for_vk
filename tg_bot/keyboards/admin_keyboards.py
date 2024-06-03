@@ -8,5 +8,10 @@ def links_kb() -> InlineKeyboardMarkup:
 
 def users_kb() -> InlineKeyboardMarkup:
     kb = InlineKeyboardMarkup()
-    kb.add(InlineKeyboardButton(text="Удалить пользователей", callback_data= "user_delete"))
+    kb.add(InlineKeyboardButton(text="Удалить пользователей в статистике", callback_data= "user_delete"))
+    return kb
+
+def loop_kb() -> InlineKeyboardMarkup:
+    kb = InlineKeyboardMarkup()
+    kb.add(InlineKeyboardButton("Удалить пользователь в статистике по времени", callback_data = "loop_delete"))
     return kb
