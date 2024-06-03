@@ -42,7 +42,6 @@ async def users_admin(message: types.Message, state: FSMContext) -> None:
         os.mkdir('tg_bot/excel')
     wb.save("tg_bot/excel/Пользователи.xlsx")
     await message.answer_document(document= InputFile("tg_bot/excel/Пользователи.xlsx"), reply_markup=users_kb())
-    os.remove("tg_bot/excel/Пользователи.xlsx")
     
 
 
@@ -88,7 +87,6 @@ async def loop_admin(message: types.Message, state: FSMContext):
         os.mkdir('tg_bot/excel')
     wb.save("tg_bot/excel/Пользователи по времени.xlsx")
     await message.answer_document(document= InputFile("tg_bot/excel/Пользователи по времени.xlsx"), reply_markup=loop_kb())
-    os.remove("tg_bot/excel/Пользователи по времени.xlsx")
 
 async def loop_delete(call: types.CallbackQuery, state: FSMContext):
     await call.message.answer("Ввведите диапазон удаления пользователей в статистике по времени через пробел без букв и сторонних символов.\n Формат типа: 1 5")
