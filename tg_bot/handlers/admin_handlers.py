@@ -144,5 +144,6 @@ async def disable(message: types.Message, state: FSMContext):
 
 async def disable_proc(message: types.Message, state: FSMContext):
     disable_messages(message.text)
+    await message.answer(f"Готово! Ответы на непонятные сообщения у пользователя @{message.text} отключены.")
     await state.finish()
 
