@@ -6,3 +6,4 @@ class admin(StatesGroup):
     del_link = State()
     del_loop = State()
     disable = State()
+    undisable = State()

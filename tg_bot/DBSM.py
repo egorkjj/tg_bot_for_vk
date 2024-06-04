@@ -161,4 +161,12 @@ def disable_messages(username):
     session.commit()
     session.close()
 
+def undisable_messages(username):
+    Session = sessionmaker()
+    session = Session(bind = engine)
+    curr = session.query(User).filter(User.username == username).first()
+    curr.disable_mess = False
+    session.commit()
+    session.close()
+    
 Base.metadata.create_all(engine)

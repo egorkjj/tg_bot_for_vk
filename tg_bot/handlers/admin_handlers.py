@@ -1,7 +1,7 @@
 from aiogram import Dispatcher, types
 from aiogram.types import InputFile
 from aiogram.dispatcher import FSMContext
-from tg_bot.DBSM import all_link, all_user, delete_users_range, delete_link, add_link, all_time_loop, delete_loop_range, disable_messages
+from tg_bot.DBSM import all_link, all_user, delete_users_range, delete_link, add_link, all_time_loop, delete_loop_range, disable_messages, undisable_messages
 from tg_bot.keyboards import users_kb, links_kb, loop_kb
 from openpyxl import Workbook
 from openpyxl.styles import Font
@@ -15,10 +15,12 @@ def register_handlers(dp: Dispatcher) -> None:
     dp.register_message_handler(add_link_proc, state = admin.add_link)
     dp.register_message_handler(loop_delete_process, state=admin.del_loop)
     dp.register_message_handler(disable_proc, state = admin.disable)
+    dp.register_message_handler(undisable_proc, state = admin.undisable)
     dp.register_message_handler(links_admin, commands=['links'], state = None)
     dp.register_message_handler(users_admin, commands=['users'], state= None)
     dp.register_message_handler(loop_admin, commands=['reviews'], state= None)
     dp.register_message_handler(disable, commands=["disable"])
+    dp.register_message_handler(undisable, commands=["undisable"])
     dp.register_callback_query_handler(loop_delete, text="loop_delete")
     dp.register_callback_query_handler(delete_user, text="user_delete", state = None)
     dp.register_callback_query_handler(links_process, text_startswith = "link", state = None)
@@ -147,3 +149,11 @@ async def disable_proc(message: types.Message, state: FSMContext):
     await message.answer(f"Готово! Ответы на непонятные сообщения у пользователя @{message.text} отключены.")
     await state.finish()
 
+async def undisable(message: types.Message, state: FSMContext):
+    await admin.undisable.set()
+    await message.answer("Введите юзернейм пользователя, которому нужно включить ответы на непонятные сообщения, без знака @ (например, madriot)")
+
+async def undisable_proc(message: types.Message, state: FSMContext):
+    undisable_messages(message.text)
+    await message.answer(f"Готово! Ответы на непонятные сообщения у пользователя @{message.text} включены.")
+    await state.finish()
