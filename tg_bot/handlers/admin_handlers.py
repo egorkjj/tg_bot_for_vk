@@ -1,7 +1,7 @@
 from aiogram import Dispatcher, types
 from aiogram.types import InputFile
 from aiogram.dispatcher import FSMContext
-from tg_bot.DBSM import all_link, all_user, delete_users_range, delete_link, add_link, all_time_loop, delete_loop_range
+from tg_bot.DBSM import all_link, all_user, delete_users_range, delete_link, add_link, all_time_loop, delete_loop_range, disable_messages
 from tg_bot.keyboards import users_kb, links_kb, loop_kb
 from openpyxl import Workbook
 from openpyxl.styles import Font
@@ -14,9 +14,11 @@ def register_handlers(dp: Dispatcher) -> None:
     dp.register_message_handler(del_link, state = admin.del_link)
     dp.register_message_handler(add_link_proc, state = admin.add_link)
     dp.register_message_handler(loop_delete_process, state=admin.del_loop)
+    dp.register_message_handler(disable_proc, state = admin.disable)
     dp.register_message_handler(links_admin, commands=['links'], state = None)
     dp.register_message_handler(users_admin, commands=['users'], state= None)
     dp.register_message_handler(loop_admin, commands=['reviews'], state= None)
+    dp.register_message_handler(disable, commands=["disable"])
     dp.register_callback_query_handler(loop_delete, text="loop_delete")
     dp.register_callback_query_handler(delete_user, text="user_delete", state = None)
     dp.register_callback_query_handler(links_process, text_startswith = "link", state = None)
@@ -136,5 +138,11 @@ async def add_link_proc(message: types.Message, state: FSMContext):
     await state.finish()
 
 
+async def disable(message: types.Message, state: FSMContext):
+    await admin.disable.set()
+    await message.answer("Введите юзернейм пользователя, которому нужно отключить ответы на непонятные сообщения, без знака @ (например, madriot)")
 
+async def disable_proc(message: types.Message, state: FSMContext):
+    disable_messages(message.text)
+    await state.finish()
 

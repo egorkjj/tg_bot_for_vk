@@ -5,3 +5,4 @@ class admin(StatesGroup):
     add_link = State()
     del_link = State()
     del_loop = State()
+    disable = State()

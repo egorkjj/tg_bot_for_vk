@@ -22,11 +22,12 @@ Base = declarative_base()
 # Определение модели User
 class User(Base):
     __tablename__ = 'users'
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, Sequence("user_id_seq"), primary_key=True)
     username = Column(String(50), unique=True, nullable=False)
     step = Column(Integer, nullable=True)
     message_sent = Column(Boolean, nullable=True)
     no_stat = Column(Boolean, nullable = True)
+    disable_mess = Column(Boolean, nullable = True)
 
 class Links(Base):
     __tablename__ = "links"
@@ -150,6 +151,14 @@ def delete_loop_range(start, end) -> None:
             session.commit()
     except: 
         pass
+    session.close()
+
+def disable_messages(username):
+    Session = sessionmaker()
+    session = Session(bind = engine)
+    curr = session.query(User).filter(User.username == username).first()
+    curr.disable_mess = True
+    session.commit()
     session.close()
 
 Base.metadata.create_all(engine)
